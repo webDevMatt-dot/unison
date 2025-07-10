@@ -1,24 +1,69 @@
-import logo from './logo.svg';
+import { useEffect, useState } from 'react';
 import './App.css';
 
 function App() {
+  const [loading, setLoading] = useState(true);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false); // New: menu toggle
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 3000);
+
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  // Toggle hamburger menu open/close
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
+  if (loading) {
+    return (
+      <div className="splash">
+        <img src="/logo.png" alt="Unison Logo" className="splash-logo" />
+      </div>
+    );
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <nav className={`navbar ${isScrolled ? 'navbar-small' : ''}`}>
+        <div className="nav-logo">
+          <img src="/logo.png" alt="Unison Logo" className="nav-logo-img" />
+        </div>
+
+        {/* Hamburger button for mobile */}
+        <button className="hamburger" onClick={toggleMenu} aria-label="Toggle menu">
+          <div className={`bar ${menuOpen ? 'open' : ''}`}></div>
+          <div className={`bar ${menuOpen ? 'open' : ''}`}></div>
+          <div className={`bar ${menuOpen ? 'open' : ''}`}></div>
+        </button>
+
+        {/* Nav links: show/hide based on menuOpen on mobile */}
+        <ul className={`nav-links ${menuOpen ? 'nav-active' : ''}`}>
+          <li><a href="#home" onClick={() => setMenuOpen(false)}>Home</a></li>
+          <li><a href="#services" onClick={() => setMenuOpen(false)}>Services</a></li>
+          <li><a href="#about" onClick={() => setMenuOpen(false)}>About</a></li>
+          <li><a href="#contact" onClick={() => setMenuOpen(false)}>Contact</a></li>
+        </ul>
+      </nav>
+
+      <main className="landing" id="home">
+        <h1>Welcome to Unison 🌍</h1>
+        <p>This is your beautiful landing page.</p>
+        <p>Scroll down to see the navbar shrink!</p>
+        <div style={{ height: '1500px' }}></div>
+      </main>
+    </>
   );
 }
 
